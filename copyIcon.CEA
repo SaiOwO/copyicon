@@ -40,7 +40,7 @@ code:
   push copyIconCall
   push ebx
   push copyButton
-  call dword ptr [GeometryDash.exe+282284]
+  call dword ptr [GeometryDash.exe+282284] // ->libcocos2d.cocos2d::CCSprite::createWithSpriteFrameName
   add esp,04
   mov ecx,eax
   call GeometryDash.exe+18EE0
@@ -59,23 +59,23 @@ code:
   movss xmm0,[ebp-000000B8]
   mulss xmm0,[xPos]
   movss [esp],xmm0
-  call dword ptr [GeometryDash.exe+282D58]
+  call dword ptr [GeometryDash.exe+282D58] // ->libcocos2d.cocos2d::CCPoint::CCPoint
   mov ecx,[ebx+000001AC]
   push eax
   lea eax,[ebp-000000A0]
   push eax
-  call dword ptr [GeometryDash.exe+282414]
+  call dword ptr [GeometryDash.exe+282414] // ->libcocos2d.cocos2d::CCNode::convertToWorldSpace
   mov ecx,[ebx+00000198]
   push eax
   lea eax,[ebp-000000D0]
   push eax
-  call dword ptr [GeometryDash.exe+2826F0]
+  call dword ptr [GeometryDash.exe+2826F0] // ->libcocos2d.cocos2d::CCNode::convertToNodeSpace
   push eax
   mov ecx,edi
   call dword ptr [esi+5C]
   mov ecx,[ebx+00000228]
   push edi
-  call dword ptr [GeometryDash.exe+282D4C]
+  call dword ptr [GeometryDash.exe+282D4C] // ->libcocos2d.cocos2d::CCArray::addObject
   mov ecx,[ebx+000001E8]
   jmp return
 
@@ -145,5 +145,3 @@ address:
   db bytes
 
 dealloc(newmem)
-
-
