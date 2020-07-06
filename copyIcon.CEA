@@ -37,28 +37,28 @@ label(return)
 newmem:
 
 code:
-  push copyIconCall
-  push ebx
-  push copyButton
+  push copyIconCall // function: copyIconCall
+  push ebx // pointer : GeometryDash.exe+2D8870
+  push copyButton // string : sprite
   call dword ptr [GeometryDash.exe+282284] // ->libcocos2d.cocos2d::CCSprite::createWithSpriteFrameName
   add esp,04
   mov ecx,eax
-  call GeometryDash.exe+18EE0
+  call GeometryDash.exe+18EE0 // Create CCMenuItem (init)
   mov ecx,[ebx+00000198]
   add esp,08
   mov edi,eax
   mov edx,[ecx]
   push edi
-  call dword ptr [edx+000000E0]
+  call dword ptr [edx+000000E0] // ->libcocos2d.cocos2d::CCMenu::addChild
   movss xmm0,[ebp-74]
   lea ecx,[ebp-80]
   mulss xmm0,[yPos]
   sub esp,08
   mov esi,[edi]
-  movss [esp+04],xmm0
+  movss [esp+04],xmm0 // push y position
   movss xmm0,[ebp-000000B8]
   mulss xmm0,[xPos]
-  movss [esp],xmm0
+  movss [esp],xmm0 // push x position
   call dword ptr [GeometryDash.exe+282D58] // ->libcocos2d.cocos2d::CCPoint::CCPoint
   mov ecx,[ebx+000001AC]
   push eax
@@ -72,7 +72,7 @@ code:
   call dword ptr [GeometryDash.exe+2826F0] // ->libcocos2d.cocos2d::CCNode::convertToNodeSpace
   push eax
   mov ecx,edi
-  call dword ptr [esi+5C]
+  call dword ptr [esi+5C] // ->libcocos2d.cocos2d::CCNode::setPosition
   mov ecx,[ebx+00000228]
   push edi
   call dword ptr [GeometryDash.exe+282D4C] // ->libcocos2d.cocos2d::CCArray::addObject
@@ -81,9 +81,9 @@ code:
 
 copyIconCall:
   push ecx
-  push 0
-  push copyIconFunction
-  call CELUA_ExecuteFunction // copyIcon()
+  push 0 // parameter (not needed in this case)
+  push copyIconFunction // string : function name
+  call CELUA_ExecuteFunction // execute function
   pop ecx
   push ebp
   mov ebp,esp
@@ -91,8 +91,8 @@ copyIconCall:
   push esi
   push edi
   mov edi,ecx
-  mov eax,[edi+000001D8]
-  mov edx,[eax+000000F0]
+  // mov eax,[edi+000001D8]
+  // mov edx,[eax+000000F0]
   push 64
   sub esp,18
   mov ecx,esp
@@ -101,15 +101,15 @@ copyIconCall:
   mov [ecx+10],00000000
   push copyMessage
   mov byte ptr [ecx],00
-  call GeometryDash.exe+F840
-  movss xmm1,[GeometryDash.exe+2E626C]
-  movss xmm0,[GeometryDash.exe+2E6260]
-  call GeometryDash.exe+1450B0
+  call GeometryDash.exe+F840 // Geometry Dash string manager
+  movss xmm1,[GeometryDash.exe+2E626C] // (0.60)
+  movss xmm0,[GeometryDash.exe+2E6260] // (0.50)
+  call GeometryDash.exe+1450B0 // Show message
   mov edx,[edi]
   add esp,18
   mov ecx,edi
   push eax
-  call dword ptr [edx+000000DC]
+  call dword ptr [edx+000000DC] // ->libcocos2d.cocos2d::CCNode::addChild
   pop edi
   pop esi
   mov esp,ebp
