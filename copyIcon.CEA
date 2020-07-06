@@ -1,0 +1,149 @@
+{$lua}
+function copyIcon()
+  local profileIcon = getAddress('[[[GeometryDash.exe+3222C8]+1DC]+10]+128')
+  local playerIcon = getAddress('[GeometryDash.exe+3222D0]+1F0')
+  for i=0,96,12 do
+    local icon = readInteger(profileIcon+((i<84) and 132 or 4)+(i/3))
+    writeInteger(playerIcon+i-0,icon)
+    writeInteger(playerIcon+i-8,icon)
+    writeInteger(playerIcon+i-4,0)
+  end
+  writeBytes(playerIcon+140,readBytes(profileIcon+164))
+end
+{$asm}
+
+loadlibrary(luaclient-i386.dll)
+luacall(openLuaServer('CELUASERVER'))
+
+CELUA_ServerName:
+db 'CELUASERVER',0
+
+define(address,"GeometryDash.exe"+210B2C)
+define(bytes,8B 8B E8 01 00 00) // mov ecx,[ebx+000001E8]
+
+// Position (as multiplier) defined from the top right of the profile layer
+
+define(yPosValue,(float)0.625)
+define(xPosValue,(float)0.185)
+
+[ENABLE]
+
+assert(address,bytes)
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  push copyIconCall
+  push ebx
+  push copyButton
+  call dword ptr [GeometryDash.exe+282284]
+  add esp,04
+  mov ecx,eax
+  call GeometryDash.exe+18EE0
+  mov ecx,[ebx+00000198]
+  add esp,08
+  mov edi,eax
+  mov edx,[ecx]
+  push edi
+  call dword ptr [edx+000000E0]
+  movss xmm0,[ebp-74]
+  lea ecx,[ebp-80]
+  mulss xmm0,[yPos]
+  sub esp,08
+  mov esi,[edi]
+  movss [esp+04],xmm0
+  movss xmm0,[ebp-000000B8]
+  mulss xmm0,[xPos]
+  movss [esp],xmm0
+  call dword ptr [GeometryDash.exe+282D58]
+  mov ecx,[ebx+000001AC]
+  push eax
+  lea eax,[ebp-000000A0]
+  push eax
+  call dword ptr [GeometryDash.exe+282414]
+  mov ecx,[ebx+00000198]
+  push eax
+  lea eax,[ebp-000000D0]
+  push eax
+  call dword ptr [GeometryDash.exe+2826F0]
+  push eax
+  mov ecx,edi
+  call dword ptr [esi+5C]
+  mov ecx,[ebx+00000228]
+  push edi
+  call dword ptr [GeometryDash.exe+282D4C]
+  mov ecx,[ebx+000001E8]
+  jmp return
+
+copyIconCall:
+  push ecx
+  push 0
+  push copyIconFunction
+  call CELUA_ExecuteFunction // copyIcon()
+  pop ecx
+  push ebp
+  mov ebp,esp
+  sub esp,24
+  push esi
+  push edi
+  mov edi,ecx
+  mov eax,[edi+000001D8]
+  mov edx,[eax+000000F0]
+  push 64
+  sub esp,18
+  mov ecx,esp
+  push [copyMessageLen]
+  mov [ecx+14],0000000F
+  mov [ecx+10],00000000
+  push copyMessage
+  mov byte ptr [ecx],00
+  call GeometryDash.exe+F840
+  movss xmm1,[GeometryDash.exe+2E626C]
+  movss xmm0,[GeometryDash.exe+2E6260]
+  call GeometryDash.exe+1450B0
+  mov edx,[edi]
+  add esp,18
+  mov ecx,edi
+  push eax
+  call dword ptr [edx+000000DC]
+  pop edi
+  pop esi
+  mov esp,ebp
+  pop ebp
+  ret 0004
+
+copyButton:
+  db 'GJ_copyBtn2_001.png',0
+
+yPos:
+  dd yPosValue
+
+xPos:
+  dd xPosValue
+
+copyMessage:
+  db 'Icon Copied Successfully!',0
+
+copyMessageLen:
+  dd (int)25 // Length of copyMessage
+
+copyIconFunction:
+  db 'copyIcon()',0
+
+address:
+  jmp newmem
+  nop
+return:
+
+[DISABLE]
+
+address:
+  db bytes
+
+dealloc(newmem)
+
+
